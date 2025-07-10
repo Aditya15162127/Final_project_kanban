@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const Success = () => {
@@ -6,11 +6,13 @@ const Success = () => {
   const navigate = useNavigate();
   const { state } = location;
 
-  if (!state || !state.email || !state.password) {
-    // If accessed directly, redirect to login
-    navigate('/login', { replace: true });
-    return null;
-  }
+  useEffect(() => {
+    // If not logged in, redirect to login
+    const user = localStorage.getItem('kanbanUser');
+    if (!user) navigate('/login', { replace: true });
+  }, [navigate]);
+
+  if (!state || !state.email || !state.password) return null;
 
   const maskedPassword = '*'.repeat(state.password.length);
 
@@ -27,6 +29,12 @@ const Success = () => {
             <span className="font-semibold">Password:</span> {maskedPassword}
           </p>
         </div>
+        <button
+          className="mt-6 bg-blue-600 text-white px-4 py-2 rounded"
+          onClick={() => navigate('/kanban')}
+        >
+          Go to Kanban Board
+        </button>
       </div>
     </div>
   );

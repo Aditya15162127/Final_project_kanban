@@ -1,13 +1,28 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MdOutlineCancel } from 'react-icons/md';
-
 import { Button } from '.';
-import { userProfileData } from '../data/dummy';
 import { useStateContext } from '../contexts/ContextProvider';
 import avatar from '../data/avatar.jpg';
 
 const UserProfile = () => {
-  const { currentColor } = useStateContext();
+  const { currentColor, user, setUser, setIsClicked, initialState } = useStateContext();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('kanbanUser');
+    setIsClicked(initialState);
+    navigate('/login');
+  };
+
+  const handleProfile = () => {
+    navigate('/profile');
+    setIsClicked(initialState);
+  };
+
+  const displayName = user?.name || (user?.email ? user.email.split('@')[0] : 'User');
+  const displayAvatar = user?.profileImage || avatar;
 
   return (
     <div className="nav-item absolute right-1 top-16 bg-white dark:bg-[#42464D] p-8 rounded-lg w-96">
@@ -19,49 +34,33 @@ const UserProfile = () => {
           bgHoverColor="light-gray"
           size="2xl"
           borderRadius="50%"
+          onClick={() => setIsClicked(initialState)}
         />
       </div>
-      <div className="flex gap-5 items-center mt-6 border-color border-b-1 pb-6">
+      <div className="flex flex-col items-center mt-4">
         <img
-          className="rounded-full h-24 w-24"
-          src={avatar}
+          className="rounded-full w-24 h-24 mb-2"
+          src={displayAvatar}
           alt="user-profile"
         />
-        <div>
-          <p className="font-semibold text-xl dark:text-gray-200"> Michael Roberts </p>
-          <p className="text-gray-500 text-sm dark:text-gray-400">  Administrator   </p>
-          <p className="text-gray-500 text-sm font-semibold dark:text-gray-400"> info@shop.com </p>
-        </div>
+        <p className="text-lg font-semibold">{displayName}</p>
+        <p className="text-gray-500">{user?.email}</p>
       </div>
-      <div>
-        {userProfileData.map((item, index) => (
-          <div key={index} className="flex gap-5 border-b-1 border-color p-4 hover:bg-light-gray cursor-pointer  dark:hover:bg-[#42464D]">
-            <button
-              type="button"
-              style={{ color: item.iconColor, backgroundColor: item.iconBg }}
-              className=" text-xl rounded-lg p-3 hover:bg-light-gray"
-            >
-              {item.icon}
-            </button>
-
-            <div>
-              <p className="font-semibold dark:text-gray-200 ">{item.title}</p>
-              <p className="text-gray-500 text-sm dark:text-gray-400"> {item.desc} </p>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="mt-5">
-        <Button
-          color="white"
-          bgColor={currentColor}
-          text="Logout"
-          borderRadius="10px"
-          width="full"
-        />
+      <div className="flex flex-col gap-2 mt-6">
+        <button
+          className="w-full py-2 rounded text-white font-semibold bg-blue-600 hover:bg-blue-700"
+          onClick={handleProfile}
+        >
+          My Profile
+        </button>
+        <button
+          className="w-full py-2 rounded text-white font-semibold bg-red-600 hover:bg-red-700"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
       </div>
     </div>
-
   );
 };
 

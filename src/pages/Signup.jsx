@@ -1,33 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useStateContext } from '../contexts/ContextProvider';
 
 const getColorMode = () => localStorage.getItem('themeMode') || 'Light';
 
-const Login = () => {
+const Signup = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [colorMode, setColorMode] = useState(getColorMode());
   const navigate = useNavigate();
-  const { setUser } = useStateContext();
 
   useEffect(() => {
     setColorMode(getColorMode());
   }, []);
 
-  const handleLogin = (e) => {
+  const handleSignup = (e) => {
     e.preventDefault();
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const user = users.find(u => u.email === email && u.password === password);
-    if (!user) {
-      setError('Invalid email or password.');
+    if (!name || !email || !password) {
+      setError('All fields are required.');
       return;
     }
-    const { name, email: userEmail, profileImage } = user;
-    setUser({ name, email: userEmail, profileImage: profileImage || '' });
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    if (users.find((u) => u.email === email)) {
+      setError('Email already registered.');
+      return;
+    }
+    const newUser = { name, email, password, profileImage: '' };
+    users.push(newUser);
+    localStorage.setItem('users', JSON.stringify(users));
     setError('');
-    navigate('/kanban');
+    navigate('/login');
   };
 
   const bg = colorMode === 'Dark'
@@ -40,8 +43,18 @@ const Login = () => {
 
   return (
     <div className={`min-h-screen flex items-center justify-center ${bg} px-2 py-8`}>
-      <form className={`w-full max-w-md p-8 rounded-2xl shadow-2xl ${cardBg}`} onSubmit={handleLogin}>
-        <h2 className="text-3xl font-bold mb-6 text-center">Login</h2>
+      <form className={`w-full max-w-md p-8 rounded-2xl shadow-2xl ${cardBg}`} onSubmit={handleSignup}>
+        <h2 className="text-3xl font-bold mb-6 text-center">Sign Up</h2>
+        <div className="mb-4">
+          <label className="block mb-1 font-semibold">Name</label>
+          <input
+            type="text"
+            className="w-full border rounded px-3 py-2 bg-inherit focus:outline-none focus:ring-2 focus:ring-blue-400"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            autoComplete="name"
+          />
+        </div>
         <div className="mb-4">
           <label className="block mb-1 font-semibold">Email</label>
           <input
@@ -59,7 +72,7 @@ const Login = () => {
             className="w-full border rounded px-3 py-2 bg-inherit focus:outline-none focus:ring-2 focus:ring-blue-400"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            autoComplete="current-password"
+            autoComplete="new-password"
           />
         </div>
         {error && <p className="text-red-400 text-sm mb-2">{error}</p>}
@@ -67,15 +80,15 @@ const Login = () => {
           type="submit"
           className="w-full py-2 rounded text-white font-semibold bg-blue-600 hover:bg-blue-700 shadow"
         >
-          Login
+          Sign Up
         </button>
         <p className="mt-4 text-center text-sm">
-          Don't have an account?{' '}
-          <Link to="/signup" className="text-blue-400 underline">Sign up here</Link>
+          Already have an account?{' '}
+          <Link to="/login" className="text-blue-400 underline">Login here</Link>
         </p>
       </form>
     </div>
   );
 };
 
-export default Login;
+export default Signup;

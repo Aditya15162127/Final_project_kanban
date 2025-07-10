@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const StateContext = createContext();
 
@@ -10,29 +10,80 @@ const initialState = {
 };
 
 export const ContextProvider = ({ children }) => {
-  const [screenSize, setScreenSize] = useState(undefined);
+  // Theme state
   const [currentColor, setCurrentColor] = useState('#03C9D7');
   const [currentMode, setCurrentMode] = useState('Light');
   const [themeSettings, setThemeSettings] = useState(false);
-  const [activeMenu, setActiveMenu] = useState(true);
-  const [isClicked, setIsClicked] = useState(initialState);
 
+  // Sidebar/menu state
+  const [activeMenu, setActiveMenu] = useState(true);
+
+  // User state
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('kanbanUser')) || null);
+
+  // Other UI state
+  const [isClicked, setIsClicked] = useState(initialState);
+  const [screenSize, setScreenSize] = useState(undefined);
+
+  // Keep user state in sync with localStorage
+  useEffect(() => {
+    const handleStorage = () => {
+      setUser(JSON.parse(localStorage.getItem('kanbanUser')) || null);
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
+  // Update localStorage when user changes
+  const updateUser = (newUser) => {
+    setUser(newUser);
+    if (newUser) {
+      localStorage.setItem('kanbanUser', JSON.stringify(newUser));
+    } else {
+      localStorage.removeItem('kanbanUser');
+    }
+  };
+
+  // Theme setters
   const setMode = (e) => {
     setCurrentMode(e.target.value);
     localStorage.setItem('themeMode', e.target.value);
+    setThemeSettings(false);
   };
 
   const setColor = (color) => {
     setCurrentColor(color);
     localStorage.setItem('colorMode', color);
+    setThemeSettings(false);
   };
 
+  // UI helpers
   const handleClick = (clicked) => setIsClicked({ ...initialState, [clicked]: true });
 
   return (
-    // eslint-disable-next-line react/jsx-no-constructed-context-values
-    <StateContext.Provider value={{ currentColor, currentMode, activeMenu, screenSize, setScreenSize, handleClick, isClicked, initialState, setIsClicked, setActiveMenu, setCurrentColor, setCurrentMode, setMode, setColor, themeSettings, setThemeSettings }}>
-      {children}
+  <StateContext.Provider
+    value={{
+        currentColor,
+        setCurrentColor,
+        currentMode,
+        setCurrentMode,
+        activeMenu,
+        setActiveMenu,
+        themeSettings,
+        setThemeSettings,
+        isClicked,
+        setIsClicked,
+        handleClick,
+        screenSize,
+        setScreenSize,
+       user,
+       setUser: updateUser,
+        setMode,
+       setColor,
+       initialState,
+      }}
+  >
+     {children}
     </StateContext.Provider>
   );
 };
