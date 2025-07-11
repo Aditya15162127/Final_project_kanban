@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { KanbanComponent, ColumnsDirective, ColumnDirective } from '@syncfusion/ej2-react-kanban';
-import { useNavigate } from 'react-router-dom';
 
 const getUser = () => JSON.parse(localStorage.getItem('kanbanUser'));
 const TASKS_KEY = 'kanbanTasks';
@@ -18,7 +17,6 @@ const Kanban = () => {
   const [form, setForm] = useState({ title: '', description: '', dueDate: '', assignee: '' });
   const [users, setUsers] = useState([]);
   const user = getUser();
-  const navigate = useNavigate();
 
   useEffect(() => {
     // Load tasks from localStorage
@@ -71,9 +69,7 @@ const Kanban = () => {
 
   const onDragStop = (args) => {
     // Update task status in localStorage
-    const updated = tasks.map((task) =>
-      task.Id === args.data[0].Id ? { ...task, Status: args.data[0].Status } : task
-    );
+    const updated = tasks.map((task) => (task.Id === args.data[0].Id ? { ...task, Status: args.data[0].Status } : task));
     setTasks(updated);
   };
 
@@ -82,6 +78,7 @@ const Kanban = () => {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Kanban Board</h2>
         <button
+          type="button"
           className="bg-blue-600 text-white px-4 py-2 rounded"
           onClick={() => setShowAdd(true)}
         >
@@ -143,7 +140,7 @@ const Kanban = () => {
       >
         <ColumnsDirective>
           {defaultColumns.map((col) => (
-            <ColumnDirective key={col.keyField} {...col} />
+            <ColumnDirective key={col.keyField} headerText={col.headerText} keyField={col.keyField} />
           ))}
         </ColumnsDirective>
       </KanbanComponent>

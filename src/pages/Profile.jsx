@@ -77,36 +77,55 @@ const Profile = () => {
             className="w-28 h-28 object-cover rounded-full border-4 border-blue-500 shadow"
           />
         </div>
-        <label className="mb-2 w-full">
-          <span className="block mb-1 font-semibold">Name</span>
+        <div className="mb-4">
+          <label htmlFor="name" className="block mb-2 font-semibold">Name</label>
           <input
+            id="name"
             type="text"
+            className="w-full p-2 border rounded"
             value={name}
-            onChange={e => setName(e.target.value)}
-            className="w-full border rounded px-3 py-2 bg-inherit focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onChange={(e) => setName(e.target.value)}
           />
-        </label>
-        <label className="mb-2 w-full">
-          <span className="block mb-1 font-semibold">Email</span>
+        </div>
+        <div className="mb-4">
+          <label htmlFor="email" className="block mb-2 font-semibold">Email</label>
           <input
+            id="email"
             type="email"
+            className="w-full p-2 border rounded"
             value={user?.email || ''}
             disabled
-            className="w-full border rounded px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
           />
-        </label>
-        <label className="mb-4 w-full flex flex-col items-center">
+        </div>
+        <div className="mb-4">
+          <label htmlFor="bio" className="block mb-2 font-semibold">Bio</label>
+          <textarea
+            id="bio"
+            className="w-full p-2 border rounded"
+            rows="3"
+            value={user?.bio || ''}
+            onChange={(e) => setUser({ ...user, bio: e.target.value })}
+          />
+        </div>
+        <label htmlFor="profile-image" className="mb-4 w-full flex flex-col items-center">
           <input
+            id="profile-image"
             type="file"
-            accept="image/jpeg,image/png"
+            accept="image/*"
             className="hidden"
-            id="profile-upload"
-            onChange={handleImageChange}
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => setUser({ ...user, profileImage: e.target.result });
+                reader.readAsDataURL(file);
+              }
+            }}
           />
           <button
             type="button"
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow mb-2"
-            onClick={() => document.getElementById('profile-upload').click()}
+            onClick={() => document.getElementById('profile-image').click()}
           >
             Change Picture
           </button>

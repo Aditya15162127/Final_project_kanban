@@ -1,88 +1,81 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-
-const getColorMode = () => localStorage.getItem('themeMode') || 'Light';
 
 const Signup = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [colorMode, setColorMode] = useState(getColorMode());
   const navigate = useNavigate();
-
-  useEffect(() => {
-    setColorMode(getColorMode());
-  }, []);
 
   const handleSignup = (e) => {
     e.preventDefault();
+    // Simple validation
     if (!name || !email || !password) {
-      setError('All fields are required.');
+      setError('Please fill in all fields');
       return;
     }
+
+    // Mock signup - in real app, you'd make an API call
     const users = JSON.parse(localStorage.getItem('users')) || [];
-    if (users.find((u) => u.email === email)) {
-      setError('Email already registered.');
+    const existingUser = users.find((u) => u.email === email);
+
+    if (existingUser) {
+      setError('User already exists');
       return;
     }
-    const newUser = { name, email, password, profileImage: '' };
+
+    const newUser = { name, email, password };
     users.push(newUser);
     localStorage.setItem('users', JSON.stringify(users));
-    setError('');
+
     navigate('/login');
   };
 
-  const bg = colorMode === 'Dark'
-    ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700'
-    : 'bg-gradient-to-br from-blue-100 via-white to-blue-200';
-
-  const cardBg = colorMode === 'Dark'
-    ? 'dark:bg-[#32373e] bg-[#32373e] text-white'
-    : 'bg-white text-gray-900';
 
   return (
-    <div className={`min-h-screen flex items-center justify-center ${bg} px-2 py-8`}>
-      <form className={`w-full max-w-md p-8 rounded-2xl shadow-2xl ${cardBg}`} onSubmit={handleSignup}>
+    <div className="min-h-screen flex items-center justify-center px-2 py-8">
+      <form className="w-full max-w-md p-8 rounded-2xl shadow-2xl" onSubmit={handleSignup}>
         <h2 className="text-3xl font-bold mb-6 text-center">Sign Up</h2>
         <div className="mb-4">
-          <label className="block mb-1 font-semibold">Name</label>
+          <label htmlFor="name" className="block mb-2 font-semibold">Name</label>
           <input
+            id="name"
+            name="name"
             type="text"
-            className="w-full border rounded px-3 py-2 bg-inherit focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full p-2 border rounded"
             value={name}
-            onChange={e => setName(e.target.value)}
-            autoComplete="name"
+            onChange={(e) => setName(e.target.value)}
+            required
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-1 font-semibold">Email</label>
+          <label htmlFor="email" className="block mb-2 font-semibold">Email</label>
           <input
+            id="email"
+            name="email"
             type="email"
-            className="w-full border rounded px-3 py-2 bg-inherit focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full p-2 border rounded"
             value={email}
-            onChange={e => setEmail(e.target.value)}
-            autoComplete="username"
+            onChange={(e) => setEmail(e.target.value)}
+            required
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-1 font-semibold">Password</label>
+          <label htmlFor="password" className="block mb-2 font-semibold">Password</label>
           <input
+            id="password"
+            name="password"
             type="password"
-            className="w-full border rounded px-3 py-2 bg-inherit focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full p-2 border rounded"
             value={password}
-            onChange={e => setPassword(e.target.value)}
-            autoComplete="new-password"
+            onChange={(e) => setPassword(e.target.value)}
+            required
           />
         </div>
         {error && <p className="text-red-400 text-sm mb-2">{error}</p>}
-        <button
-          type="submit"
-          className="w-full py-2 rounded text-white font-semibold bg-blue-600 hover:bg-blue-700 shadow"
-        >
-          Sign Up
-        </button>
-        <p className="mt-4 text-center text-sm">
+        <button type="submit" className="w-full py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700">Sign Up</button>
+        <p className="mt-4 text-center">
           Already have an account?{' '}
           <Link to="/login" className="text-blue-400 underline">Login here</Link>
         </p>

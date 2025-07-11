@@ -6,7 +6,7 @@ import { useStateContext } from '../contexts/ContextProvider';
 import avatar from '../data/avatar.jpg';
 
 const UserProfile = () => {
-  const { currentColor, user, setUser, setIsClicked, initialState } = useStateContext();
+  const { user, setUser, setIsClicked, initialState } = useStateContext();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -48,12 +48,14 @@ const UserProfile = () => {
       </div>
       <div className="flex flex-col gap-2 mt-6">
         <button
+          type="button"
           className="w-full py-2 rounded text-white font-semibold bg-blue-600 hover:bg-blue-700"
           onClick={handleProfile}
         >
           My Profile
         </button>
         <button
+          type="button"
           className="w-full py-2 rounded text-white font-semibold bg-red-600 hover:bg-red-700"
           onClick={handleLogout}
         >

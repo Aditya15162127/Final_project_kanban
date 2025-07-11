@@ -1,76 +1,66 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useStateContext } from '../contexts/ContextProvider';
-
-const getColorMode = () => localStorage.getItem('themeMode') || 'Light';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [colorMode, setColorMode] = useState(getColorMode());
   const navigate = useNavigate();
   const { setUser } = useStateContext();
 
-  useEffect(() => {
-    setColorMode(getColorMode());
-  }, []);
-
   const handleLogin = (e) => {
     e.preventDefault();
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const user = users.find(u => u.email === email && u.password === password);
-    if (!user) {
-      setError('Invalid email or password.');
+    // Simple validation
+    if (!email || !password) {
+      setError('Please fill in all fields');
       return;
     }
-    const { name, email: userEmail, profileImage } = user;
-    setUser({ name, email: userEmail, profileImage: profileImage || '' });
-    setError('');
-    navigate('/kanban');
+
+    // Mock login - in real app, you'd make an API call
+    const mockUser = {
+      name: email.split('@')[0],
+      email,
+      profileImage: null,
+    };
+
+    setUser(mockUser);
+    localStorage.setItem('kanbanUser', JSON.stringify(mockUser));
+    navigate('/ecommerce');
   };
 
-  const bg = colorMode === 'Dark'
-    ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700'
-    : 'bg-gradient-to-br from-blue-100 via-white to-blue-200';
-
-  const cardBg = colorMode === 'Dark'
-    ? 'dark:bg-[#32373e] bg-[#32373e] text-white'
-    : 'bg-white text-gray-900';
-
   return (
-    <div className={`min-h-screen flex items-center justify-center ${bg} px-2 py-8`}>
-      <form className={`w-full max-w-md p-8 rounded-2xl shadow-2xl ${cardBg}`} onSubmit={handleLogin}>
+    <div className="min-h-screen flex items-center justify-center px-2 py-8">
+      <form className="w-full max-w-md p-8 rounded-2xl shadow-2xl" onSubmit={handleLogin}>
         <h2 className="text-3xl font-bold mb-6 text-center">Login</h2>
         <div className="mb-4">
-          <label className="block mb-1 font-semibold">Email</label>
+          <label htmlFor="email" className="block mb-2 font-semibold">Email</label>
           <input
+            id="email"
+            name="email"
             type="email"
-            className="w-full border rounded px-3 py-2 bg-inherit focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full p-2 border rounded"
             value={email}
-            onChange={e => setEmail(e.target.value)}
-            autoComplete="username"
+            onChange={(e) => setEmail(e.target.value)}
+            required
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-1 font-semibold">Password</label>
+          <label htmlFor="password" className="block mb-2 font-semibold">Password</label>
           <input
+            id="password"
+            name="password"
             type="password"
-            className="w-full border rounded px-3 py-2 bg-inherit focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full p-2 border rounded"
             value={password}
-            onChange={e => setPassword(e.target.value)}
-            autoComplete="current-password"
+            onChange={(e) => setPassword(e.target.value)}
+            required
           />
         </div>
         {error && <p className="text-red-400 text-sm mb-2">{error}</p>}
-        <button
-          type="submit"
-          className="w-full py-2 rounded text-white font-semibold bg-blue-600 hover:bg-blue-700 shadow"
-        >
-          Login
-        </button>
-        <p className="mt-4 text-center text-sm">
-          Don't have an account?{' '}
+        <button type="submit" className="w-full py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700">Login</button>
+        <p className="mt-4 text-center">
+          Don&apos;t have an account?{' '}
           <Link to="/signup" className="text-blue-400 underline">Sign up here</Link>
         </p>
       </form>

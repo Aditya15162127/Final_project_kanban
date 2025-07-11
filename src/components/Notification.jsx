@@ -16,12 +16,12 @@ const Notification = () => {
           <button type="button" className="text-white text-xs rounded p-1 px-2 bg-orange-theme "> 5 New</button>
         </div>
         <Button
-            icon={<MdOutlineCancel />}
-            color="rgb(153, 171, 180)"
-            bgHoverColor="light-gray"
-            size="2xl"
-            borderRadius="50%"
-            onClick={() => setIsClicked(initialState)}
+          icon={<MdOutlineCancel />}
+          color="rgb(153, 171, 180)"
+          bgHoverColor="light-gray"
+          size="2xl"
+          borderRadius="50%"
+          onClick={() => setIsClicked(initialState)}
         />
       </div>
       <div className="mt-5 ">
